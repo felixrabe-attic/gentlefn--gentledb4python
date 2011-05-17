@@ -16,10 +16,43 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with GentleDB.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, print_function
+
 import os
 
 def random():
+    """
+    Return a random-generated 256-bit number in hexadecimal representation.
+
+    These numbers are suitable as identifiers in a pointer database.
+    """
     return os.urandom(256 / 8).encode("hex")
 
 def create_file_with_mode(filename, mode):
     return os.fdopen(os.open(filename, os.O_CREAT | os.O_WRONLY, mode), "wb")
+
+IDENTIFIER_LENGTH = 256 / 4
+IDENTIFIER_DIGITS = "0123456789abcdef"
+
+class GentleDBException(Exception):
+    """
+    Base class for all exceptions originating in Gentle.
+    """
+
+class InvalidIdentifierException(GentleDBException, LookupError):
+    """
+    Invalid Gentle identifier.
+    """
+    pass
+
+def is_identifier_valid(identifier, partial=False):
+    if not isinstance(identifier, basestring): return False
+    if not (len(identifier) <= IDENTIFIER_LENGTH and
+            all(c in IDENTIFIER_DIGITS for c in identifier)):
+        return False
+    if partial or len(identifier) == IDENTIFIER_LENGTH: return True
+    return False
+
+def validate_identifier(identifier, partial=False):
+    if not is_identifier_valid(identifier, partial):
+        raise InvalidIdentifierException(identifier)

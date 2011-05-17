@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with GentleDB.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, print_function
+
 import os
 
 from . import fs, interfaces
@@ -44,5 +46,5 @@ class GentleDB(fs.GentleDB):
         return os.path.join(directory, id)
 
 
-class GentleDBFull(interfaces.GentleDBFull, GentleDB):
+class GentleDBFull(fs.GentleDBFull, GentleDB):
     pass

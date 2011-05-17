@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with GentleDB.  If not, see <http://www.gnu.org/licenses/>.
 
-from gentledb.fs        import GentleDBFull as FS
-from gentledb.memory    import GentleDBFull as Memory
+from __future__ import absolute_import, print_function
 
+from gentledb.fs        import GentleDBFull as FS
 from gentledb.fs_old    import GentleDBFull as FSOld
+from gentledb.memory    import GentleDBFull as Memory
+from gentledb.misc      import GentleDBEasy as Easy

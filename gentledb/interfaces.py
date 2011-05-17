@@ -17,13 +17,86 @@
 # License along with GentleDB.  If not, see <http://www.gnu.org/licenses/>.
 
 class GentleDB(object):
-    def __add__(self, content): pass
-    def __sub__(self, content_id): pass
-    def __invert__(self): pass
-    def __setitem__(self, pointer_id, content_id): pass
-    def __getitem__(self, pointer_id): pass
-    def __call__(self, *args): pass
+    """
+    A GentleDB instance.
+    """
+
+    def __add__(self, content):
+        """
+        Enter content into the database and return its content identifier.
+
+        The content identifier is a hash value of the content.  The current
+        implementation uses the SHA-256 value of the content as the content
+        identifier.
+
+        This method gives priority to pre-existing content.  This means that
+        content will not be saved if its hash value already exists as a key in
+        the database.
+
+        Example:
+        >>> content_id = db + "some content"
+        """
+
+    def __sub__(self, content_id):
+        """
+        Get content from the database.
+        """
+
+    def __invert__(self):
+        """
+        Return a random-generated 256-bit number in hexadecimal representation.
+
+        These numbers are suitable as identifiers in a pointer database.
+        """
+
+    def __setitem__(self, pointer_id, content_id):
+        """
+        Create, change, or remove a pointer in the pointer database.
+
+        A pointer can be removed by providing None or the empty string "" as the
+        content_id.
+        """
+
+    def __delitem__(self, pointer_id):
+        "Same as: self[pointer_id] = None"
+        return self.__setitem__(pointer_id, None)
+
+    def __getitem__(self, pointer_id):
+        """
+        Retrieve the content_id the given pointer_id points to.
+        """
+
+    def __call__(self, *args):
+        """
+        Get or store content by providing a file-like interface.
+
+        Return a file-like object.
+
+        Examples:
+        >>> file_to_write = db()
+        >>> file_to_read = db(content_id)
+        """
 
 class GentleDBFull(GentleDB):
-    def findc(self, content_id): pass
-    def findp(self, pointer_id): pass
+    """
+    A GentleDB that provides more methods which depend on direct access to the
+    underlying data store.
+    """
+
+    def findc(self, partial_content_id=""):
+        """
+        Find all content identifiers registered in this database that start with
+        partial_content_id.  Return an unsorted list.  The list may be empty.
+
+        If partial_content_id is not specified (default is ""), return the full
+        list of all content identifiers in the database.
+        """
+
+    def findp(self, partial_pointer_id=""):
+        """
+        Find all pointer identifiers registered in this database that start with
+        partial_pointer_id.  Return an unsorted list.  The list may be empty.
+
+        If partial_pointer_id is not specified (default is ""), return the full
+        list of all pointer identifiers in the database.
+        """

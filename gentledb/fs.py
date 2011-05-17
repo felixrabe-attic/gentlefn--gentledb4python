@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with GentleDB.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, print_function
+
+import glob
 from hashlib import sha256
 import os
 import tempfile
@@ -32,12 +35,17 @@ class GentleDB(interfaces.GentleDB):
         self.content_dir = os.path.join(self.directory, "content_db")
         self.pointer_dir = os.path.join(self.directory, "pointer_db")
         self.tmp_dir = os.path.join(self.directory, "tmp")
-        for directory in (self.directory, self.content_dir, self.pointer_dir, self.tmp_dir):
+        for directory in (self.directory, self.content_dir, self.pointer_dir,
+                          self.tmp_dir):
             if not os.path.exists(directory):
-                os.mkdir(directory, 0700)
+                try:
+                    os.mkdir(directory, 0700)
+                except:
+                    raise utilities.GentleDBException(
+                        "Could not create directory %r" % directory)
 
     def _id_to_path(self, directory, id, create_dir=True):
-        idpath = (id[:2], id[2:4], id[4:7], id[7:])
+        idpath = filter(bool, (id[:2], id[2:4], id[4:7], id[7:]))
         directory = os.path.join(directory, *idpath[:-1])
         if create_dir:
             if not os.path.exists(directory):
@@ -50,14 +58,23 @@ class GentleDB(interfaces.GentleDB):
     def _get_pointer_filename(self, *a, **k):
         return self._id_to_path(self.pointer_dir, *a, **k)
 
+    def _find_partial_id(self, directory, partial_id):
+        id = partial_id + (64 - len(partial_id)) * "?"
+        path_to_glob = self._id_to_path(directory, id, create_dir=False)
+        found = glob.glob(path_to_glob)
+        found = [f[len(directory):].replace(os.sep, "") for f in found]
+        return found
+
     def __add__(self, content):
         content_id = sha256(content).hexdigest()
         filename = self._get_content_filename(content_id, create_dir=True)
         if not os.path.exists(filename):
-            utilities.create_file_with_mode(filename, 0400).write(content)
+            with utilities.create_file_with_mode(filename, 0400) as f:
+                f.write(content)
         return content_id
 
     def __sub__(self, content_id):
+        utilities.validate_identifier(content_id)
         filename = self._get_content_filename(content_id, create_dir=False)
         content = open(filename, "rb").read()
         return content
@@ -66,11 +83,20 @@ class GentleDB(interfaces.GentleDB):
         return utilities.random()
 
     def __setitem__(self, pointer_id, content_id):
-        filename = self._get_pointer_filename(pointer_id, create_dir=True)
-        utilities.create_file_with_mode(filename, 0600).write(content_id)
+        utilities.validate_identifier(pointer_id)
+        if content_id:
+            utilities.validate_identifier(content_id)
+            filename = self._get_pointer_filename(pointer_id, create_dir=True)
+            with utilities.create_file_with_mode(filename, 0600) as f:
+                f.write(content_id)
+        else:  # remove pointer
+            filename = self._get_pointer_filename(pointer_id, create_dir=False)
+            if os.path.exists(filename):
+                os.remove(filename)
         return pointer_id
 
     def __getitem__(self, pointer_id):
+        utilities.validate_identifier(pointer_id)
         filename = self._get_pointer_filename(pointer_id, create_dir=False)
         content_id = open(filename, "rb").read()
         return content_id
@@ -84,11 +110,15 @@ class GentleDB(interfaces.GentleDB):
 
 class GentleDBFull(interfaces.GentleDBFull, GentleDB):
 
-    def findc(self, content_id):
-        pass
+    def findc(self, partial_content_id=""):
+        utilities.validate_identifier(partial_content_id, partial=True)
+        content_ids = self._find_partial_id(self.content_dir, partial_content_id)
+        return content_ids
 
-    def findp(self, pointer_id):
-        pass
+    def findp(self, partial_pointer_id=""):
+        utilities.validate_identifier(partial_pointer_id, partial=True)
+        pointer_ids = self._find_partial_id(self.pointer_dir, partial_pointer_id)
+        return pointer_ids
 
 
 class _OutFile(object):
@@ -108,7 +138,7 @@ class _OutFile(object):
 
     def close(self):
         if not self.is_open:
-            raise Exception, "File already closed"
+            raise utilities.GentleDBException, "File already closed"
         self.tmpfile.close()
         self.is_open = False
         content_id = self()
@@ -116,7 +146,7 @@ class _OutFile(object):
         if not os.path.exists(filename):
             os.chmod(self.tmpfile_path, 0400)
             os.rename(self.tmpfile_path, filename)
-        else:
+        else:  # we do not overwrite existing content
             os.remove(self.tmpfile_path)
 
     def __call__(self):

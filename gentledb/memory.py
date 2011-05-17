@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with GentleDB.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import, print_function
+
 from hashlib import sha256
 
 from . import interfaces, utilities
@@ -34,15 +36,22 @@ class GentleDB(interfaces.GentleDB):
         return content_id
 
     def __sub__(self, content_id):
+        utilities.validate_identifier(content_id)
         return self.content_db[content_id]
 
     def __invert__(self):
         return utilities.random()
 
     def __setitem__(self, pointer_id, content_id):
-        self.pointer_db[pointer_id] = content_id
+        utilities.validate_identifier(pointer_id)
+        if content_id:
+            utilities.validate_identifier(content_id)
+            self.pointer_db[pointer_id] = content_id
+        else:
+            del self.pointer_db[pointer_id]
 
     def __getitem__(self, pointer_id):
+        utilities.validate_identifier(pointer_id)
         return self.pointer_db[pointer_id]
 
     def __call__(self, *args):
@@ -54,11 +63,15 @@ class GentleDB(interfaces.GentleDB):
 
 class GentleDBFull(interfaces.GentleDBFull, GentleDB):
 
-    def findc(self, content_id):
-        pass
+    def findc(self, partial_content_id=""):
+        utilities.validate_identifier(partial_content_id, partial=True)
+        content_ids = [i for i in self.content_db if i.startswith(partial_content_id)]
+        return content_ids
 
-    def findp(self, pointer_id):
-        pass
+    def findp(self, partial_pointer_id=""):
+        utilities.validate_identifier(partial_pointer_id, partial=True)
+        pointer_ids = [i for i in self.pointer_db if i.startswith(partial_pointer_id)]
+        return pointer_ids
 
 
 class _OutFile(object):
