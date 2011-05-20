@@ -31,6 +31,8 @@ class GentleDBEasy(interfaces.GentleDBFull):
 
     def __init__(self, db):
         super(GentleDBEasy, self).__init__()
+        if isinstance(db, type):  # make this work: db = Easy(FSOld)
+            db = db()
         self.db = db
 
     def _find_single_id(self, partial_id, find):
