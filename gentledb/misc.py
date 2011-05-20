@@ -20,6 +20,16 @@ from __future__ import absolute_import, print_function
 
 from . import interfaces, utilities
 
+try:
+    import json  # Py 2.6+ -- though this code has yet to be used with 2.5
+except:
+    pass
+else:
+    # usage: json.compact(json.dumps, obj) - works with 'dump' and 'dumps'
+    json.compact = lambda f, *a: f(*a, separators=(',',':'), sort_keys=True)
+    # usage: json.pretty(json.dumps, obj) - works with 'dump' and 'dumps'
+    json.pretty = lambda f, *a: f(*a, indent=4, sort_keys=True)
+
 
 class GentleDBEasy(interfaces.GentleDBFull):
     """
