@@ -73,7 +73,10 @@ class GentleDBEasy(interfaces.GentleDBFull):
 
     def __setitem__(self, partial_pointer_id, partial_content_id):
         pointer_id = self._find_single_pointer_id(partial_pointer_id)
-        content_id = self._find_single_content_id(partial_content_id)
+        if partial_content_id:
+            content_id = self._find_single_content_id(partial_content_id)
+        else:
+            content_id = None
         self.db[pointer_id] = content_id
 
     def __getitem__(self, partial_pointer_id):
