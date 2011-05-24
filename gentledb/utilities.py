@@ -20,13 +20,18 @@ from __future__ import absolute_import, print_function
 
 import os
 
-def random():
+def random(prefix=""):
     """
     Return a random-generated 256-bit number in hexadecimal representation.
 
     These numbers are suitable as identifiers in a pointer database.
+
+    A prefix may be specified, in which case the resulting number will start
+    with the specified prefix.
     """
-    return os.urandom(256 / 8).encode("hex")
+    validate_identifier(prefix, partial=True)
+    n = os.urandom(256 / 8).encode("hex")
+    return prefix + n[len(prefix):]
 
 def create_file_with_mode(filename, mode):
     return os.fdopen(os.open(filename, os.O_CREAT | os.O_WRONLY, mode), "wb")
