@@ -51,8 +51,7 @@ class GentleDBEasy(interfaces.GentleDBFull):
         else:
             found_ids = find(partial_id)
         if len(found_ids) != 1:
-            raise utilities.GentleDBException(
-                "Number of identifiers starting with %r is != 1" % partial_id)
+            raise utilities.InvalidIdentifierException(partial_id)
         return found_ids[0]
 
     def _find_single_content_id(self, partial_content_id):

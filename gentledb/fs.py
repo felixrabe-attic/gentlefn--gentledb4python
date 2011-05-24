@@ -138,7 +138,7 @@ class _OutFile(object):
 
     def close(self):
         if not self.is_open:
-            raise utilities.GentleDBException, "File already closed"
+            raise utilities.GentleDBException("File already closed")
         self.tmpfile.close()
         self.is_open = False
         content_id = self()

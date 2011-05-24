@@ -24,10 +24,12 @@ def random(prefix=""):
     """
     Return a random-generated 256-bit number in hexadecimal representation.
 
-    These numbers are suitable as identifiers in a pointer database.
+    These numbers are suitable as pointer identifiers.
 
     A prefix may be specified, in which case the resulting number will start
-    with the specified prefix.
+    with the specified prefix.  This option should be used only rarely.  It is
+    considered bad practice, as using prefixes goes against the even (random)
+    distribution of GentleDB (content and pointer) identifiers.
     """
     validate_identifier(prefix, partial=True)
     n = os.urandom(256 / 8).encode("hex")
@@ -48,7 +50,9 @@ class InvalidIdentifierException(GentleDBException, LookupError):
     """
     Invalid Gentle identifier.
     """
-    pass
+    def __init__(self, bad_identifier):
+        super(InvalidIdentifierException, self).__init__("Bad identifier: %r" %
+                                                         bad_identifier)
 
 def is_identifier_valid(identifier, partial=False):
     if not isinstance(identifier, basestring): return False
