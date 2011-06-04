@@ -49,7 +49,7 @@ class GentleDB(interfaces.GentleDB):
         directory = os.path.join(directory, *idpath[:-1])
         if create_dir:
             if not os.path.exists(directory):
-                os.makedirs(directory)
+                os.makedirs(directory, 0700)
         return os.path.join(directory, idpath[-1])
 
     def _get_content_filename(self, *a, **k):
