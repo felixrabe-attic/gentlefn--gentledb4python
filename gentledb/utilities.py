@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011  Felix Rabe (www.felixrabe.net)
+# Copyright (C) 2012  Felix Rabe (www.felixrabe.net)
 #
 # GentleDB is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
