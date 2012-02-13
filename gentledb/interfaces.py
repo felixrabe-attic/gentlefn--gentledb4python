@@ -47,6 +47,9 @@ class GentleDB(object):
         Return a random-generated 256-bit number in hexadecimal representation.
 
         These numbers are suitable as identifiers in a pointer database.
+
+        Example:
+        >>> new_identifier = ~db
         """
 
     def __setitem__(self, pointer_id, content_id):

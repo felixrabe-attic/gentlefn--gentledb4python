@@ -55,7 +55,7 @@ class GentleDB(interfaces.GentleDB):
         return self.pointer_db[pointer_id]
 
     def __call__(self, *args):
-        if len(args) == 0:              # f=db() ; f.write(content) ; content_id
+        if len(args) == 0:              # f=db() ; f.write(content) ; content_id=f()
             return _OutFile(self)
         else:                           # f=db(content_id) ; content=f.read()
             return _InFile(self, args[0])
