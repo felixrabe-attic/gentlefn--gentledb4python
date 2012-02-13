@@ -100,11 +100,12 @@ class GentleDB(interfaces.GentleDB):
         content_id = open(filename, "rb").read()
         return content_id
 
-    def __call__(self, *args):
-        if len(args) == 0:      # ex.: f=db() ; f.write(content) ; content_id=f()
+    def __call__(self, content_id=None):
+        if content_id is not None:  # f=db(content_id) ; content=f.read()
+            utilities.validate_identifier(content_id)
+            return _InFile(self, content_id)
+        else:                       # f=db() ; f.write(content) ; content_id=f()
             return _OutFile(self)
-        else:                   # ex.: f=db(content_id) ; content=f.read()
-            return _InFile(self, args[0])
 
 
 class GentleDBFull(interfaces.GentleDBFull, GentleDB):

@@ -82,12 +82,12 @@ class GentleDBEasy(interfaces.GentleDBFull):
         pointer_id = self._find_single_pointer_id(partial_pointer_id)
         return self.db[pointer_id]
 
-    def __call__(self, *args):
-        if len(args) == 0:
-            return self.db()
-        else:
-            content_id = self._find_single_content_id(args[0])
+    def __call__(self, content_id=None):
+        if content_id is not None:
+            content_id = self._find_single_content_id(content_id)
             return self.db(content_id)
+        else:
+            return self.db()
 
     def findc(self, partial_content_id=""):
         return self.db.findc(partial_content_id)

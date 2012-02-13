@@ -69,7 +69,7 @@ class GentleDB(object):
         Retrieve the content_id the given pointer_id points to.
         """
 
-    def __call__(self, *args):
+    def __call__(self, content_id=None):
         """
         Get or store content by providing a file-like interface.
 
