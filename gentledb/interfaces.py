@@ -74,7 +74,10 @@ class GentleDB(object):
 
         Examples:
         >>> file_to_write = db()
+        >>> file_to_write.write(content)
+        >>> content_id = file_to_write()  # __call__() also calls close()
         >>> file_to_read = db(content_id)
+        >>> content = file_to_read.read()
         """
 
 class GentleDBFull(GentleDB):
