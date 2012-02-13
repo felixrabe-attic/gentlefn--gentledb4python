@@ -4,8 +4,8 @@ GentleDB - The Simplest Database in the World (Python implementation)
 A database so simple that even my girlfriend understands it.
 
 
-The idea of GentleDB is very simple
------------------------------------
+Database operations
+-------------------
 
 * It can store and retrieve content:
     content_id      = db + <some content>
