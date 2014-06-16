@@ -1,7 +1,7 @@
 GentleDB - The Simplest Database in the World (Python implementation)
 =====================================================================
 
-A database so simple that even my girlfriend understands it.
+A database that even a non-scientist can understand.
 
 
 Database operations
